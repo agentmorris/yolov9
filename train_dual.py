@@ -531,6 +531,9 @@ def main(opt, callbacks=Callbacks()):
         assert torch.cuda.device_count() > LOCAL_RANK, 'insufficient CUDA devices for DDP command'
         torch.cuda.set_device(LOCAL_RANK)
         device = torch.device('cuda', LOCAL_RANK)
+        print('\n**** DISABLING BLOCKING WAIT ****\n')
+        os.environ['NCCL_BLOCKING_WAIT'] = '0'  # not to enforce timeout
+        print('NCCL available: {}'.format(dist.is_nccl_available()))
         dist.init_process_group(backend="nccl" if dist.is_nccl_available() else "gloo")
 
     # Train
